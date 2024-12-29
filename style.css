@@ -266,7 +266,45 @@ p {
 
     align-items: center;
 
-    gap: 5px;
+    gap: 8px;
+
+    padding: 10px;
+
+    text-align: center;
+
+}
+
+
+
+.balance h2,
+
+.total h2,
+
+.expenses h2 {
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    margin-bottom: 5px;
+
+    white-space: nowrap;
+
+}
+
+
+
+.balance p,
+
+.total p,
+
+.expenses p {
+
+    font-size: 18px;
+
+    font-weight: 500;
+
+    letter-spacing: 0.5px;
 
 }
 
@@ -409,7 +447,7 @@ p i{
     }
 
     .row2-cover {
-        padding: 20px;
+        padding: 20px 15px;
     }
 
     .expense-list {
@@ -425,6 +463,18 @@ p i{
         width: auto;
         min-width: 100px;
         padding: 8px 15px;
+    }
+
+    .balance h2,
+    .total h2,
+    .expenses h2 {
+        font-size: 14px;
+    }
+
+    .balance p,
+    .total p,
+    .expenses p {
+        font-size: 16px;
     }
 }
 
@@ -444,7 +494,7 @@ p i{
     }
 
     .row2-cover {
-        padding: 15px;
+        padding: 15px 10px;
     }
 
     input, button, select {
@@ -470,6 +520,27 @@ p i{
         min-width: 90px;
         padding: 6px 12px;
         font-size: 12px;
+    }
+
+    .balance,
+    .total,
+    .expenses {
+        padding: 8px 5px;
+        gap: 6px;
+    }
+
+    .balance h2,
+    .total h2,
+    .expenses h2 {
+        font-size: 13px;
+        margin-bottom: 3px;
+    }
+
+    .balance p,
+    .total p,
+    .expenses p {
+        font-size: 15px;
+        letter-spacing: 0.3px;
     }
 }
 
@@ -999,4 +1070,34 @@ p i{
 
     margin-top: 5px;
 
+}
+
+
+
+.budget-inputs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.budget-inputs input,
+.budget-inputs select {
+    flex: 1;
+}
+
+#budgetTimeFrame {
+    color: rgb(70, 70, 70);
+    border: 2px solid rgb(230, 230, 230);
+    border-radius: 8px;
+    outline: none;
+    font-size: 14px;
+    padding: 12px 15px;
+    font-family: 'Poppins', sans-serif;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background-color: white;
+}
+
+#budgetTimeFrame:focus {
+    border-color: rgb(84, 126, 247);
+    box-shadow: 0 0 0 3px rgba(84, 126, 247, 0.1);
 }

@@ -62,9 +62,15 @@ function show() {
 
 function setBudget() {
     const budgetInput = document.getElementById('budget');
+    const timeFrame = document.getElementById('budgetTimeFrame').value;
+    
     if (budgetInput.value && !isNaN(budgetInput.value) && parseFloat(budgetInput.value) >= 0) {
         const userData = getCurrentUserData();
-        userData.budget = parseFloat(budgetInput.value);
+        userData.budget = {
+            amount: parseFloat(budgetInput.value),
+            timeFrame: timeFrame,
+            startDate: new Date().toISOString()
+        };
         updateUserData(userData);
         updateStats();
         budgetInput.value = '';
@@ -102,8 +108,9 @@ function add() {
     const costInput = document.getElementById('costInp');
     const categorySelect = document.getElementById('categorySelect');
     const userData = getCurrentUserData();
-    const currentBudget = userData.budget || 0;
-    const currentTotalExpenses = expenses.reduce((total, expense) => total + expense.cost, 0);
+    const currentBudget = userData.budget?.amount || 0;
+    const currentPeriodExpenses = getExpensesInCurrentPeriod();
+    const currentTotalExpenses = currentPeriodExpenses.reduce((total, expense) => total + expense.cost, 0);
 
     if (titleInput.value && costInput.value && !isNaN(costInput.value) && parseFloat(costInput.value) >= 0) {
         const newExpenseCost = parseFloat(costInput.value);
@@ -137,10 +144,61 @@ function add() {
     }
 }
 
+function getExpensesInCurrentPeriod() {
+    const userData = getCurrentUserData();
+    if (!userData.budget) return [];
+
+    const budgetStartDate = new Date(userData.budget.startDate);
+    const currentDate = new Date();
+    
+    return expenses.filter(expense => {
+        const expenseDate = new Date(expense.date);
+        if (userData.budget.timeFrame === 'weekly') {
+            // Get start of the current week
+            const weekStart = new Date(budgetStartDate);
+            const currentWeekStart = new Date(currentDate);
+            weekStart.setHours(0, 0, 0, 0);
+            currentWeekStart.setHours(0, 0, 0, 0);
+            
+            // Set to start of week (Sunday)
+            weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+            currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay());
+            
+            // Check if we're in a new week cycle
+            const weeksDiff = Math.floor((currentWeekStart - weekStart) / (7 * 24 * 60 * 60 * 1000));
+            const cycleStart = new Date(weekStart);
+            cycleStart.setDate(cycleStart.getDate() + (weeksDiff * 7));
+            const cycleEnd = new Date(cycleStart);
+            cycleEnd.setDate(cycleEnd.getDate() + 7);
+            
+            return expenseDate >= cycleStart && expenseDate < cycleEnd;
+        } else { // monthly
+            // Get start of the current month
+            const monthStart = new Date(budgetStartDate);
+            const currentMonthStart = new Date(currentDate);
+            monthStart.setDate(1);
+            monthStart.setHours(0, 0, 0, 0);
+            currentMonthStart.setDate(1);
+            currentMonthStart.setHours(0, 0, 0, 0);
+            
+            // Check if we're in a new month cycle
+            const monthsDiff = (currentMonthStart.getFullYear() - monthStart.getFullYear()) * 12 
+                + (currentMonthStart.getMonth() - monthStart.getMonth());
+            const cycleStart = new Date(monthStart);
+            cycleStart.setMonth(cycleStart.getMonth() + monthsDiff);
+            const cycleEnd = new Date(cycleStart);
+            cycleEnd.setMonth(cycleEnd.getMonth() + 1);
+            
+            return expenseDate >= cycleStart && expenseDate < cycleEnd;
+        }
+    });
+}
+
 function updateStats() {
     const userData = getCurrentUserData();
-    const budget = userData.budget || 0;
-    const totalExpenses = expenses.reduce((total, expense) => total + expense.cost, 0);
+    const budget = userData.budget?.amount || 0;
+    const currentPeriodExpenses = getExpensesInCurrentPeriod();
+    const totalExpenses = currentPeriodExpenses.reduce((total, expense) => total + expense.cost, 0);
     const balance = budget - totalExpenses;
 
     document.getElementById('budgetPlace').textContent = formatCurrency(budget);
@@ -262,13 +320,13 @@ function saveEdit() {
     const costInput = document.getElementById('editCost');
     const categorySelect = document.getElementById('editCategory');
     const userData = getCurrentUserData();
-    const currentBudget = userData.budget || 0;
+    const currentBudget = userData.budget?.amount || 0;
 
     if (titleInput.value && costInput.value && !isNaN(costInput.value) && parseFloat(costInput.value) >= 0) {
         const newCost = parseFloat(costInput.value);
-        const oldCost = expenses[currentEditIndex].cost;
-        const otherExpenses = expenses.reduce((total, expense, index) => 
-            index !== currentEditIndex ? total + expense.cost : total, 0);
+        const currentPeriodExpenses = getExpensesInCurrentPeriod();
+        const otherExpenses = currentPeriodExpenses.reduce((total, expense, index) => 
+            expense !== expenses[currentEditIndex] ? total + expense.cost : total, 0);
 
         // Check if the new total expenses would exceed the budget
         if (otherExpenses + newCost > currentBudget) {
