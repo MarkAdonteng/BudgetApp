@@ -895,3 +895,73 @@ p i{
     color: #ff4757;
 
 }
+
+
+
+.header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 30px;
+
+}
+
+
+
+.header-content {
+
+    flex: 1;
+
+}
+
+
+
+.logout-btn {
+
+    background: transparent;
+
+    color: rgb(70, 70, 70);
+
+    border: 2px solid rgb(84, 126, 247);
+
+    padding: 8px 15px;
+
+    min-width: auto;
+
+    margin: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+}
+
+
+
+.logout-btn:hover {
+
+    background: rgb(84, 126, 247);
+
+    color: white;
+
+    transform: translateY(-2px);
+
+}
+
+
+
+.subtitle {
+
+    color: rgb(155, 155, 155);
+
+    font-size: 14px;
+
+    margin-top: 5px;
+
+}

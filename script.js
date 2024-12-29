@@ -1,7 +1,46 @@
-// Initialize expenses array from localStorage
-let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+// Check authentication
+function checkAuth() {
+    const currentUser = sessionStorage.getItem('currentUser');
+    if (!currentUser) {
+        window.location.href = 'login.html';
+        return;
+    }
+    
+    // Update UI with user name
+    const user = JSON.parse(currentUser);
+    const headerSubtitle = document.querySelector('.subtitle');
+    headerSubtitle.textContent = `Welcome back, ${user.name}`;
+}
+
+// Function to get current user's data
+function getCurrentUserData() {
+    const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    return users.find(u => u.id === currentUser.id);
+}
+
+// Function to update user data
+function updateUserData(userData) {
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    const index = users.findIndex(u => u.id === userData.id);
+    if (index !== -1) {
+        users[index] = userData;
+        localStorage.setItem('users', JSON.stringify(users));
+    }
+}
+
+// Initialize expenses array from user data
+let expenses = [];
 let currentEditIndex = -1;
 let deleteIndex = -1;
+
+// Load user's expenses
+function loadUserExpenses() {
+    const userData = getCurrentUserData();
+    expenses = userData.expenses || [];
+    updateExpenseList();
+    updateStats();
+}
 
 var stats = document.getElementById('stats');
 var text = document.getElementById('text');
@@ -24,7 +63,9 @@ function show() {
 function setBudget() {
     const budgetInput = document.getElementById('budget');
     if (budgetInput.value && !isNaN(budgetInput.value) && parseFloat(budgetInput.value) >= 0) {
-        localStorage.setItem('budget', budgetInput.value);
+        const userData = getCurrentUserData();
+        userData.budget = parseFloat(budgetInput.value);
+        updateUserData(userData);
         updateStats();
         budgetInput.value = '';
     } else {
@@ -60,7 +101,8 @@ function add() {
     const titleInput = document.getElementById('titleInp');
     const costInput = document.getElementById('costInp');
     const categorySelect = document.getElementById('categorySelect');
-    const currentBudget = parseFloat(localStorage.getItem('budget')) || 0;
+    const userData = getCurrentUserData();
+    const currentBudget = userData.budget || 0;
     const currentTotalExpenses = expenses.reduce((total, expense) => total + expense.cost, 0);
 
     if (titleInput.value && costInput.value && !isNaN(costInput.value) && parseFloat(costInput.value) >= 0) {
@@ -80,7 +122,8 @@ function add() {
         };
 
         expenses.push(newExpense);
-        localStorage.setItem('expenses', JSON.stringify(expenses));
+        userData.expenses = expenses;
+        updateUserData(userData);
         
         // Clear inputs
         titleInput.value = '';
@@ -95,7 +138,8 @@ function add() {
 }
 
 function updateStats() {
-    const budget = parseFloat(localStorage.getItem('budget')) || 0;
+    const userData = getCurrentUserData();
+    const budget = userData.budget || 0;
     const totalExpenses = expenses.reduce((total, expense) => total + expense.cost, 0);
     const balance = budget - totalExpenses;
 
@@ -112,11 +156,12 @@ function updateStats() {
     } else {
         balanceElement.style.color = '#2ecc71';
     }
+}
 
-    // Show alert if budget is exceeded
-    if (balance < 0) {
-        alert('Warning: Budget limit exceeded!');
-    }
+// Add logout function
+function logout() {
+    sessionStorage.removeItem('currentUser');
+    window.location.href = 'login.html';
 }
 
 function filterExpenses() {
@@ -225,7 +270,9 @@ function saveEdit() {
             category: categorySelect.value
         };
 
-        localStorage.setItem('expenses', JSON.stringify(expenses));
+        const userData = getCurrentUserData();
+        userData.expenses = expenses;
+        updateUserData(userData);
         closeEditModal();
         updateExpenseList();
         updateStats();
@@ -248,7 +295,9 @@ function confirmDelete() {
     if (deleteIndex === -1) return;
     
     expenses.splice(deleteIndex, 1);
-    localStorage.setItem('expenses', JSON.stringify(expenses));
+    const userData = getCurrentUserData();
+    userData.expenses = expenses;
+    updateUserData(userData);
     closeDeleteModal();
     updateExpenseList();
     updateStats();
@@ -256,6 +305,6 @@ function confirmDelete() {
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
-    updateExpenseList();
-    updateStats();
+    checkAuth();
+    loadUserExpenses();
 });

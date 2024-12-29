@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Tracker - Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-box" id="loginBox">
+            <div class="auth-header">
+                <h1><i class="fas fa-wallet"></i> Budget Tracker</h1>
+                <p>Sign in to manage your expenses</p>
+            </div>
+            <form id="loginForm" onsubmit="return handleLogin(event)">
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="loginEmail" placeholder="Email" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="loginPassword" placeholder="Password" required>
+                </div>
+                <button type="submit">Sign In</button>
+            </form>
+            <p class="switch-text">Don't have an account? <a href="#" onclick="toggleForms('register')">Sign Up</a></p>
+        </div>
+
+        <div class="auth-box" id="registerBox" style="display: none;">
+            <div class="auth-header">
+                <h1><i class="fas fa-user-plus"></i> Create Account</h1>
+                <p>Sign up to start tracking your budget</p>
+            </div>
+            <form id="registerForm" onsubmit="return handleRegister(event)">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="registerName" placeholder="Full Name" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="registerEmail" placeholder="Email" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="registerPassword" placeholder="Password" required minlength="6">
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+                </div>
+                <button type="submit">Sign Up</button>
+            </form>
+            <p class="switch-text">Already have an account? <a href="#" onclick="toggleForms('login')">Sign In</a></p>
+        </div>
+    </div>
+    <script src="auth.js"></script>
+</body>
+</html> 

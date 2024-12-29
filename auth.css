@@ -1,0 +1,129 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, rgb(84, 126, 247) 0%, rgb(74, 116, 237) 100%);
+    padding: 20px;
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 400px;
+}
+
+.auth-box {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.auth-header h1 {
+    color: rgb(70, 70, 70);
+    font-size: 24px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.auth-header p {
+    color: rgb(155, 155, 155);
+    font-size: 14px;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.input-group i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgb(155, 155, 155);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 15px 12px 45px;
+    border: 2px solid rgb(230, 230, 230);
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.input-group input:focus {
+    border-color: rgb(84, 126, 247);
+    box-shadow: 0 0 0 3px rgba(84, 126, 247, 0.1);
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, rgb(84, 126, 247) 0%, rgb(74, 116, 237) 100%);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(84, 126, 247, 0.2);
+}
+
+.switch-text {
+    text-align: center;
+    margin-top: 20px;
+    color: rgb(155, 155, 155);
+    font-size: 14px;
+}
+
+.switch-text a {
+    color: rgb(84, 126, 247);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.switch-text a:hover {
+    text-decoration: underline;
+}
+
+.error-message {
+    background-color: #ffe5e5;
+    color: #ff4757;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    display: none;
+}
+
+@media screen and (max-width: 480px) {
+    .auth-box {
+        padding: 20px;
+    }
+    
+    .auth-header h1 {
+        font-size: 20px;
+    }
+} 
