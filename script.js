@@ -62,15 +62,10 @@ function show() {
 
 function setBudget() {
     const budgetInput = document.getElementById('budget');
-    const timeFrame = document.getElementById('budgetTimeFrame').value;
     
     if (budgetInput.value && !isNaN(budgetInput.value) && parseFloat(budgetInput.value) >= 0) {
         const userData = getCurrentUserData();
-        userData.budget = {
-            amount: parseFloat(budgetInput.value),
-            timeFrame: timeFrame,
-            startDate: new Date().toISOString()
-        };
+        userData.budget = parseFloat(budgetInput.value);
         updateUserData(userData);
         updateStats();
         budgetInput.value = '';
@@ -80,8 +75,8 @@ function setBudget() {
 }
 
 function formatCurrency(number) {
-    // Ensure number is treated as a number and has 2 decimal places
-    const amount = Number(number).toFixed(2);
+    // Ensure number is treated as a number
+    const amount = parseFloat(number) || 0;
     return new Intl.NumberFormat('en-GH', {
         style: 'currency',
         currency: 'GHS',
@@ -112,16 +107,15 @@ function add() {
     const costInput = document.getElementById('costInp');
     const categorySelect = document.getElementById('categorySelect');
     const userData = getCurrentUserData();
-    const currentBudget = userData.budget?.amount || 0;
-    const currentPeriodExpenses = getExpensesInCurrentPeriod();
-    const currentTotalExpenses = currentPeriodExpenses.reduce((total, expense) => total + expense.cost, 0);
+    const currentBudget = userData.budget || 0;
+    const totalExpenses = expenses.reduce((total, expense) => total + expense.cost, 0);
 
     if (titleInput.value && costInput.value && !isNaN(costInput.value) && parseFloat(costInput.value) >= 0) {
         const newExpenseCost = parseFloat(costInput.value);
         
         // Check if adding this expense would exceed the budget
-        if (currentTotalExpenses + newExpenseCost > currentBudget) {
-            showWarningModal(currentBudget, currentTotalExpenses, newExpenseCost);
+        if (totalExpenses + newExpenseCost > currentBudget) {
+            showWarningModal(currentBudget, totalExpenses, newExpenseCost);
             return;
         }
 
@@ -200,21 +194,13 @@ function getExpensesInCurrentPeriod() {
 
 function updateStats() {
     const userData = getCurrentUserData();
-    const budget = userData.budget?.amount || 0;
-    const currentPeriodExpenses = getExpensesInCurrentPeriod();
-    const totalExpenses = currentPeriodExpenses.reduce((total, expense) => total + expense.cost, 0);
+    const budget = userData.budget || 0;
+    const totalExpenses = expenses.reduce((total, expense) => total + expense.cost, 0);
     const balance = budget - totalExpenses;
 
-    // Format with 2 decimal places and proper currency
     document.getElementById('budgetPlace').textContent = formatCurrency(budget);
     document.getElementById('expensePlace').textContent = formatCurrency(totalExpenses);
     document.getElementById('balancePlace').textContent = formatCurrency(balance);
-
-    // Add timeframe indicator if budget exists
-    if (userData.budget?.timeFrame) {
-        const timeFrameText = userData.budget.timeFrame === 'weekly' ? 'Weekly' : 'Monthly';
-        document.getElementById('budgetPlace').parentElement.querySelector('h2').textContent = `${timeFrameText} Budget`;
-    }
 
     // Update balance color based on status
     const balanceElement = document.getElementById('balancePlace');
@@ -331,13 +317,12 @@ function saveEdit() {
     const costInput = document.getElementById('editCost');
     const categorySelect = document.getElementById('editCategory');
     const userData = getCurrentUserData();
-    const currentBudget = userData.budget?.amount || 0;
+    const currentBudget = userData.budget || 0;
 
     if (titleInput.value && costInput.value && !isNaN(costInput.value) && parseFloat(costInput.value) >= 0) {
         const newCost = parseFloat(costInput.value);
-        const currentPeriodExpenses = getExpensesInCurrentPeriod();
-        const otherExpenses = currentPeriodExpenses.reduce((total, expense, index) => 
-            expense !== expenses[currentEditIndex] ? total + expense.cost : total, 0);
+        const otherExpenses = expenses.reduce((total, expense, index) => 
+            index !== currentEditIndex ? total + expense.cost : total, 0);
 
         // Check if the new total expenses would exceed the budget
         if (otherExpenses + newCost > currentBudget) {
