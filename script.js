@@ -261,16 +261,28 @@ function saveEdit() {
     const titleInput = document.getElementById('editTitle');
     const costInput = document.getElementById('editCost');
     const categorySelect = document.getElementById('editCategory');
+    const userData = getCurrentUserData();
+    const currentBudget = userData.budget || 0;
 
     if (titleInput.value && costInput.value && !isNaN(costInput.value) && parseFloat(costInput.value) >= 0) {
+        const newCost = parseFloat(costInput.value);
+        const oldCost = expenses[currentEditIndex].cost;
+        const otherExpenses = expenses.reduce((total, expense, index) => 
+            index !== currentEditIndex ? total + expense.cost : total, 0);
+
+        // Check if the new total expenses would exceed the budget
+        if (otherExpenses + newCost > currentBudget) {
+            showWarningModal(currentBudget, otherExpenses, newCost);
+            return;
+        }
+
         expenses[currentEditIndex] = {
             ...expenses[currentEditIndex],
             title: titleInput.value,
-            cost: parseFloat(costInput.value),
+            cost: newCost,
             category: categorySelect.value
         };
 
-        const userData = getCurrentUserData();
         userData.expenses = expenses;
         updateUserData(userData);
         closeEditModal();
