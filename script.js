@@ -80,10 +80,14 @@ function setBudget() {
 }
 
 function formatCurrency(number) {
+    // Ensure number is treated as a number and has 2 decimal places
+    const amount = Number(number).toFixed(2);
     return new Intl.NumberFormat('en-GH', {
         style: 'currency',
-        currency: 'GHS'
-    }).format(number);
+        currency: 'GHS',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(amount);
 }
 
 function showWarningModal(currentBudget, currentExpenses, newExpenseCost) {
@@ -201,9 +205,16 @@ function updateStats() {
     const totalExpenses = currentPeriodExpenses.reduce((total, expense) => total + expense.cost, 0);
     const balance = budget - totalExpenses;
 
+    // Format with 2 decimal places and proper currency
     document.getElementById('budgetPlace').textContent = formatCurrency(budget);
     document.getElementById('expensePlace').textContent = formatCurrency(totalExpenses);
     document.getElementById('balancePlace').textContent = formatCurrency(balance);
+
+    // Add timeframe indicator if budget exists
+    if (userData.budget?.timeFrame) {
+        const timeFrameText = userData.budget.timeFrame === 'weekly' ? 'Weekly' : 'Monthly';
+        document.getElementById('budgetPlace').parentElement.querySelector('h2').textContent = `${timeFrameText} Budget`;
+    }
 
     // Update balance color based on status
     const balanceElement = document.getElementById('balancePlace');
